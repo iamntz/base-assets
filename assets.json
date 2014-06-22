@@ -1,0 +1,30 @@
+{
+  "javascripts" : {
+    "{%= name %}" : {
+      "src" : [
+        "src/javascripts/{%= name %}/*.js",
+        "src/javascripts/{%= name %}/**/*.js"
+      ]
+    },
+
+    "{%= name %}.vendor" : {
+      "options" : {
+        "skipLint" : true
+      },
+      "src" : [
+        "src/vendor/*.js",
+        "src/vendor/**/*.js"
+      ]
+    }
+  },
+
+
+  "stylesheets" : {
+    "screen" : {
+      "src" : [
+        "src/stylesheets/screen/screen.scss",
+        "src/stylesheets/screen/**/*.scss"
+      ]
+    }
+  }
+}
