@@ -140,6 +140,11 @@ html {
 .ta-c {text-align:center;}
 .ta-r {text-align:right;}
 
+img {
+  &.alignleft {margin-right:1em;}
+  &.alignright {margin-left:1em;}
+}
+
 .clearfix {
   @extend %clearfix;
 }
@@ -169,16 +174,17 @@ body {
 }
 
 .visible-small {
-  @include respond-to(medium-screens){
-    display:none;
-  }
-  @include respond-to(wide-screens){
+  @include respond-to(mediumplus-screens){
     display:none;
   }
 }
 
 .visible-wide {
   @include respond-to(medium-screens){
+    display:none;
+  }
+
+  @include respond-to(small-screens){
     display:none;
   }
 }

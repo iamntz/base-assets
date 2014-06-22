@@ -5,11 +5,21 @@ $large-screens: 1024px !default;
   @if $media == small-screens {
     @media only screen and (max-width: $small-screens) { @content; }
   }
+
   @else if $media == medium-screens {
     @media only screen and (min-width: $small-screens + 1) and (max-width: $large-screens - 1) { @content; }
   }
+
+  @else if $media == mediumplus-screens {
+    @media only screen and (min-width: $small-screens + 1) { @content; }
+  }
+
   @else if $media == wide-screens {
     @media only screen and (min-width: $large-screens) { @content; }
+  }
+
+  @else {
+    @media only screen and #{$media} { @content; }
   }
 }
 

@@ -13,3 +13,12 @@
 %fix-touch-scroll{
   -webkit-overflow-scrolling: touch;
 }
+
+%ani-fast {
+  @include animate('fast');
+}
+
+%ani-slow {
+  @include animate('slow');
+}
+
