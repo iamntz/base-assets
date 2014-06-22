@@ -15,7 +15,7 @@ module.exports = function(grunt) {
   var filesToWatch = {};
 
   var package_json = grunt.file.readJSON('package.json');
-  var assets       = grunt.file.readJSON('assets/assets.json');
+  var assets       = grunt.file.readJSON('assets.json');
 
   var javascripts  = assets.javascripts;
   var jsKeys  = Object.keys( javascripts );
@@ -25,7 +25,7 @@ module.exports = function(grunt) {
   jsKeys.forEach(function( taskName ){
     var task    = javascripts[taskName];
     var options = task.options || {};
-    var dest    = task.dest || 'assets/dist/javascripts/' + taskName;
+    var dest    = task.dest || 'dist/javascripts/' + taskName;
 
     if( !task.src ){ return; }
 
@@ -58,7 +58,7 @@ module.exports = function(grunt) {
   cssKeys.forEach(function( taskName ){
     var task    = stylesheets[taskName];
     var options = typeof task.options !== 'undefined' ? task.options : {};
-    var dest    = task.dest || 'assets/dist/stylesheets/' + taskName + '.css';
+    var dest    = task.dest || 'dist/stylesheets/' + taskName + '.css';
 
     if( !task.src ){ return; }
 
@@ -80,7 +80,7 @@ module.exports = function(grunt) {
     algorithm  : 'binary-tree',
     padding    : 10,
     engine     : 'auto',
-    cssTemplate: 'assets/helpers/spritesmith.sass.template.mustache',
+    cssTemplate: 'helpers/spritesmith.sass.template.mustache',
     engineOpts : {
       'imagemagick': true
     }
@@ -134,13 +134,13 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: 'assets/src',
+            cwd: 'src',
             src: [
               'images/*',
               'images/**/*',
               'fonts/**/*'
             ],
-            dest: 'assets/dist/'
+            dest: 'dist/'
           }
         ]
       }
@@ -149,10 +149,10 @@ module.exports = function(grunt) {
 
     sprite:{
       spr: extend( defaultSpriteOptions, {
-        src        : [ 'assets/src/images/sprites/spr/*.png' ],
-        destImg    : 'assets/dist/images/spr.png',
+        src        : [ 'src/images/sprites/spr/*.png' ],
+        destImg    : 'dist/images/spr.png',
         imgPath    : '../images/spr.png',
-        destCSS    : 'assets/src/stylesheets/sprites/_spr.scss',
+        destCSS    : 'src/stylesheets/sprites/_spr.scss',
 
         cssOpts : {
           "baseClass" : "spr",
@@ -163,7 +163,7 @@ module.exports = function(grunt) {
 
 
     clean: {
-      build: [ "assets/src/stylesheets/sprites/", "assets/dist"]
+      build: [ "src/stylesheets/sprites/", "dist"]
     },
 
 
@@ -175,9 +175,9 @@ module.exports = function(grunt) {
 
       assets : {
         files: [
-          'assets/src/images/*',
-          'assets/src/images/**/*',
-          'assets/src/fonts/**/*'
+          'src/images/*',
+          'src/images/**/*',
+          'src/fonts/**/*'
         ],
         tasks: [ 'copy' ]
       }
