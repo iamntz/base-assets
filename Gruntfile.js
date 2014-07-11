@@ -2,8 +2,6 @@ module.exports = function(grunt) {
   var extend = require( 'extend' );
   var args = process.argv;
 
-  var isDev = args.indexOf( 'dev' ) != -1;
-
   require('time-grunt')(grunt);
 
   require('jit-grunt')(grunt, {
@@ -11,16 +9,13 @@ module.exports = function(grunt) {
   });
 
   var jsFilesToLint = [ 'Gruntfile.js' ];
-
-  var filesToWatch = {};
-
-  var package_json = grunt.file.readJSON('package.json');
-  var assets       = grunt.file.readJSON('assets.json');
-
-  var javascripts  = assets.javascripts;
-  var jsKeys  = Object.keys( javascripts );
-  var uglifyFiles = [];
-  var concatFiles = [];
+  var filesToWatch  = {};
+  var package_json  = grunt.file.readJSON('package.json');
+  var assets        = grunt.file.readJSON('assets.json');
+  var javascripts   = assets.javascripts;
+  var jsKeys        = Object.keys( javascripts );
+  var uglifyFiles   = [];
+  var concatFiles   = [];
 
   jsKeys.forEach(function( taskName ){
     var task    = javascripts[taskName];
@@ -34,12 +29,15 @@ module.exports = function(grunt) {
         src : task.src,
         dest: dest + '.min.js'
       };
-    }
 
-    concatFiles[taskName] = {
-      src : task.src,
-      dest: dest + '.dev.js'
-    };
+      uglifyFiles[taskName + 'dev'] = {
+        src : task.src,
+        dest: dest + '.dev.js',
+        options : {
+          sourceMap: function( path ){ return path + 'map'; }
+        }
+      };
+    }
 
     if( !options.skipLint ){
       jsFilesToLint.push( task.src );
@@ -58,13 +56,25 @@ module.exports = function(grunt) {
   cssKeys.forEach(function( taskName ){
     var task    = stylesheets[taskName];
     var options = typeof task.options !== 'undefined' ? task.options : {};
-    var dest    = task.dest || 'dist/stylesheets/' + taskName + '.css';
+    var dest    = task.dest || 'dist/stylesheets/' + taskName;
 
     if( !task.src ){ return; }
 
     sassFiles[taskName] = {
       src : task.src,
-      dest: dest
+      dest: dest + '.min.css',
+      options: {
+        style    : 'compressed'
+      }
+    };
+
+    sassFiles[taskName + 'dev'] = {
+      src : task.src,
+      dest: dest + '.dev.css',
+      options: {
+        style    : 'expanded',
+        sourcemap: true
+      }
     };
 
     if( !options.skipWatch ){
@@ -138,11 +148,7 @@ module.exports = function(grunt) {
     },
 
 
-    uglify: extend( uglifyFiles, {
-      options : {
-        sourceMap: !isDev ? false : function( path ){ return path + 'map'; }
-      },
-    }),
+    uglify: extend( uglifyFiles),
 
     concat: extend( concatFiles, {
       options : {
@@ -150,13 +156,7 @@ module.exports = function(grunt) {
     }),
 
 
-    sass: extend( sassFiles, {
-      options: {
-        style    : isDev ? 'expanded' : 'compressed',
-        sourcemap: isDev,
-        // compass  : true
-      }
-    }),
+    sass: extend( sassFiles ),
 
 
     copy : {
@@ -179,7 +179,7 @@ module.exports = function(grunt) {
 
     sprite:{
       widgets: get_sprites_config( 'widgets_spr', {
-        hasHover : '.widget'
+        hasHover : 'a'
       } ),
       spr    : get_sprites_config( 'spr' ),
     },
@@ -207,7 +207,7 @@ module.exports = function(grunt) {
     })
   });
 
-  grunt.registerTask('js', [ 'jshint', ( isDev ? 'concat' : 'uglify' ) ] );
+  grunt.registerTask('js', [ 'jshint', 'uglify', 'concat' ] );
   grunt.registerTask('css', [ 'sprite', 'sass' ]);
   grunt.registerTask('assets', [ 'copy' ]);
 
