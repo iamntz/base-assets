@@ -85,6 +85,19 @@ module.exports = function(grunt) {
     }
   });
 
+  function cssVarMap( sprite ) {
+    sprite.sprite_name = sprite.name;
+    if( options.hasHover &&  sprite.sprite_name.indexOf( '-hover' ) > -1  ){
+      sprite.sprite_name = sprite.sprite_name.replace('-hover', '');
+
+      if( typeof options.hasHover == 'string' ){
+        sprite.skip_if_has_hover_on_parent = true;
+        sprite.sprite_name = options.hasHover + ':hover .' + sprite_group_name + '.' + sprite.sprite_name;
+      }else {
+        sprite.sprite_name += ':hover';
+      }
+    }
+  }//cssVarMap
 
   function get_sprites_config( sprite_group_name, options ) {
     options = options || {};
@@ -104,19 +117,7 @@ module.exports = function(grunt) {
       imgPath    : '../images/' + sprite_group_name + '.png',
       destCSS    : 'src/stylesheets/sprites/_' + sprite_group_name + '.scss',
 
-      cssVarMap : function(sprite){
-        sprite.sprite_name = sprite.name;
-        if( options.hasHover &&  sprite.sprite_name.indexOf( '-hover' ) > -1  ){
-          sprite.sprite_name = sprite.sprite_name.replace('-hover', '');
-
-          if( typeof options.hasHover == 'string' ){
-            sprite.skip_if_has_hover_on_parent = true;
-            sprite.sprite_name = options.hasHover + ':hover .' + sprite_group_name + '.' + sprite.sprite_name;
-          }else {
-            sprite.sprite_name += ':hover';
-          }
-        }
-      },
+      cssVarMap : cssVarMap,
 
       cssOpts : {
         "baseClass" : '' + sprite_group_name + '',
@@ -129,7 +130,6 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: package_json,
-
 
     jshint: {
       files: jsFilesToLint,
@@ -148,16 +148,11 @@ module.exports = function(grunt) {
     },
 
 
-    uglify: extend( uglifyFiles),
-
+    uglify: uglifyFiles,
     concat: extend( concatFiles, {
-      options : {
-      },
+      options : {},
     }),
-
-
-    sass: extend( sassFiles ),
-
+    sass: sassFiles,
 
     copy : {
       assets: {
@@ -178,10 +173,10 @@ module.exports = function(grunt) {
 
 
     sprite:{
-      widgets: get_sprites_config( 'widgets_spr', {
+      widgets : get_sprites_config( 'widgets_spr', {
         hasHover : 'a'
       } ),
-      spr    : get_sprites_config( 'spr' ),
+      spr : get_sprites_config( 'spr' ),
     },
 
 
@@ -196,6 +191,21 @@ module.exports = function(grunt) {
         livereload   : true
       },
 
+      common_js : {
+        files : [
+          'src/javascripts/common/*'
+        ],
+        tasks : 'js'
+      },
+
+      common_css: {
+        files : [
+          'src/stylesheets/utils/*',
+          'src/stylesheets/utils/**/*'
+        ],
+        tasks : 'css'
+      },
+
       assets : {
         files: [
           'src/images/*',
@@ -206,6 +216,7 @@ module.exports = function(grunt) {
       }
     })
   });
+
 
   grunt.registerTask('js', [ 'jshint', 'uglify', 'concat' ] );
   grunt.registerTask('css', [ 'sprite', 'sass' ]);
