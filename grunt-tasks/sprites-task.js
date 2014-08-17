@@ -5,22 +5,23 @@ module.exports = function( files, extend, isDev ){
     watch : []
   };
 
-  function cssVarMap( sprite, options ) {
+
+  function cssVarMap( options, group_name, sprite ) {
     sprite.sprite_name = sprite.name;
     if( options.hasHover &&  sprite.sprite_name.indexOf( '-hover' ) > -1  ){
       sprite.sprite_name = sprite.sprite_name.replace('-hover', '');
 
       if( typeof options.hasHover == 'string' ){
         sprite.skip_if_has_hover_on_parent = true;
-        sprite.sprite_name = options.hasHover + ':hover .' + sprite_group_name + '.' + sprite.sprite_name;
+        sprite.sprite_name = options.hasHover + ':hover .' + group_name + '.' + sprite.sprite_name;
       }else {
         sprite.sprite_name += ':hover';
       }
     }
-  }//cssVarMap
+  }
 
 
-  function get_sprites_config( sprite_group_name, options ) {
+  function get_sprites_config( group_name, options ) {
     options = options || {};
 
     return extend({
@@ -33,27 +34,31 @@ module.exports = function( files, extend, isDev ){
         'imagemagick': true
       },
 
-      src        : [ 'src/images/sprites/' + sprite_group_name + '/*.png' ],
-      destImg    : 'dist/images/' + sprite_group_name + '.png',
-      imgPath    : '../images/' + sprite_group_name + '.png',
-      destCSS    : 'src/stylesheets/sprites/_' + sprite_group_name + '.scss',
+      src        : [ 'src/images/sprites/' + group_name + '/*.png' ],
+      destImg    : 'dist/images/' + group_name + '.png',
+      imgPath    : '../images/' + group_name + '.png',
+      destCSS    : 'src/stylesheets/sprites/_' + group_name + '.scss',
 
-      // cssVarMap : cssVarMap,
+      cssVarMap : function( sprite ){
+        return cssVarMap( options, group_name, sprite );
+      },
 
       cssOpts : {
-        "baseClass" : '' + sprite_group_name + '',
+        "baseClass" : '' + group_name + '',
         "hasHover?" : options.hasHover,
         "functions" : true
       }
     }, options);
-  }//get_sprites_config
+  }
 
 
   returnOptions.sprites = {
     // widgets : get_sprites_config( 'widgets_spr', {
     //   hasHover : 'a'
     // } ),
-    spr : get_sprites_config( 'spr' ),
+    spr : get_sprites_config( 'spr', {
+      hasHover : 'a'
+    } ),
   };
 
   Object.keys( returnOptions.sprites ).forEach( function(sprite){
