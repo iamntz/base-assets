@@ -1,138 +1,27 @@
 module.exports = function(grunt) {
   var extend = require( 'extend' );
   var args = process.argv;
+  var isDev = args.indexOf('dev') > -1;
 
   require('time-grunt')(grunt);
 
   require('jit-grunt')(grunt, {
-    sprite: 'grunt-spritesmith'
+    sprite : 'grunt-spritesmith',
+    jasmine: 'grunt-contrib-jasmine'
   });
 
-  var jsFilesToLint = [ 'Gruntfile.js' ];
-  var filesToWatch  = {};
+  var assets   = grunt.file.readJSON('assets.json');
+  var jsFiles  = require('./grunt-tasks/js-files.js')( assets.javascripts, isDev );
+  var cssFiles = require('./grunt-tasks/css-files.js')( assets.stylesheets, isDev );
+  var sprites  = require( './grunt-tasks/sprites-task.js' )();
+
   var package_json  = grunt.file.readJSON('package.json');
-  var assets        = grunt.file.readJSON('assets.json');
-  var javascripts   = assets.javascripts;
-  var jsKeys        = Object.keys( javascripts );
-  var uglifyFiles   = [];
-  var concatFiles   = [];
-
-  jsKeys.forEach(function( taskName ){
-    var task    = javascripts[taskName];
-    var options = task.options || {};
-    var dest    = task.dest || 'dist/javascripts/' + taskName;
-
-    if( !task.src ){ return; }
-
-    if( !options.skipUglify ){
-      uglifyFiles[taskName] = {
-        src : task.src,
-        dest: dest + '.min.js'
-      };
-
-      uglifyFiles[taskName + 'dev'] = {
-        src : task.src,
-        dest: dest + '.dev.js',
-        options : {
-          sourceMap: function( path ){ return path + 'map'; }
-        }
-      };
-    }
-
-    if( !options.skipLint ){
-      jsFilesToLint.push( task.src );
-    }
-
-    filesToWatch[taskName] = {
-      files : task.src,
-      tasks : [ 'js' ]
-    };
-  });
-
-  var stylesheets  = assets.stylesheets;
-  var cssKeys = Object.keys( stylesheets );
-  var sassFiles = [];
-
-  cssKeys.forEach(function( taskName ){
-    var task    = stylesheets[taskName];
-    var options = typeof task.options !== 'undefined' ? task.options : {};
-    var dest    = task.dest || 'dist/stylesheets/' + taskName;
-
-    if( !task.src ){ return; }
-
-    sassFiles[taskName] = {
-      src : task.src,
-      dest: dest + '.min.css',
-      options: {
-        style    : 'compressed'
-      }
-    };
-
-    sassFiles[taskName + 'dev'] = {
-      src : task.src,
-      dest: dest + '.dev.css',
-      options: {
-        style    : 'expanded',
-        sourcemap: true
-      }
-    };
-
-    if( !options.skipWatch ){
-      filesToWatch[taskName] = {
-        files : task.src,
-        tasks : [ 'css' ]
-      };
-    }
-  });
-
-  function cssVarMap( sprite ) {
-    sprite.sprite_name = sprite.name;
-    if( options.hasHover &&  sprite.sprite_name.indexOf( '-hover' ) > -1  ){
-      sprite.sprite_name = sprite.sprite_name.replace('-hover', '');
-
-      if( typeof options.hasHover == 'string' ){
-        sprite.skip_if_has_hover_on_parent = true;
-        sprite.sprite_name = options.hasHover + ':hover .' + sprite_group_name + '.' + sprite.sprite_name;
-      }else {
-        sprite.sprite_name += ':hover';
-      }
-    }
-  }//cssVarMap
-
-  function get_sprites_config( sprite_group_name, options ) {
-    options = options || {};
-
-    return extend({
-      algorithm  : 'binary-tree',
-      padding    : 10,
-      engine     : 'auto',
-      cssTemplate: 'helpers/spritesmith.sass.template.mustache',
-
-      engineOpts : {
-        'imagemagick': true
-      },
-
-      src        : [ 'src/images/sprites/' + sprite_group_name + '/*.png' ],
-      destImg    : 'dist/images/' + sprite_group_name + '.png',
-      imgPath    : '../images/' + sprite_group_name + '.png',
-      destCSS    : 'src/stylesheets/sprites/_' + sprite_group_name + '.scss',
-
-      cssVarMap : cssVarMap,
-
-      cssOpts : {
-        "baseClass" : '' + sprite_group_name + '',
-        "hasHover?" : options.hasHover,
-        "functions" : true
-      }
-    }, options);
-  }//get_sprites_config
-
 
   grunt.initConfig({
     pkg: package_json,
 
     jshint: {
-      files: jsFilesToLint,
+      files: jsFiles.lint,
       options: {
         reporter: require('jshint-stylish'),
         globals: {
@@ -147,12 +36,39 @@ module.exports = function(grunt) {
       }
     },
 
+    concat: jsFiles.concat,
+    uglify: jsFiles.uglify,
+    jasmine : jsFiles.tests,
+    sass: cssFiles.sass,
+    sprite: sprites.sprites,
 
-    uglify: uglifyFiles,
-    concat: extend( concatFiles, {
-      options : {},
-    }),
-    sass: sassFiles,
+    watch: require('./grunt-tasks/watch-task.js')( jsFiles.watch, cssFiles.watch ),
+
+    jst: {
+      {%= name %}: {
+        options: {
+          namespace: "{%= name %}Views",
+          prettify: true,
+          processName: function(src) {
+            return src.replace( /(src\/javascripts\/{%= name %}\/app\/Templates\/)|(.html)/ig, '');
+          }
+        },
+        files: {
+          "dist/javascripts/templates.js": ["src/javascripts/{%= name %}/app/Templates/**/*.html"]
+        }
+      }
+    },
+
+    karma: {
+      options: {
+        configFile: 'karma-config.js'
+      },
+
+      dev: {
+        browsers: ['PhantomJS'],
+        reporters: ['beep', 'dots']
+      }
+    },
 
     copy : {
       assets: {
@@ -171,57 +87,16 @@ module.exports = function(grunt) {
       }
     },
 
-
-    sprite:{
-      widgets : get_sprites_config( 'widgets_spr', {
-        hasHover : 'a'
-      } ),
-      spr : get_sprites_config( 'spr' ),
-    },
-
-
     clean: {
-      build: [ "src/stylesheets/sprites/", "dist"]
+      build: [ "src/stylesheets/sprites/", "dist" ]
     },
-
-
-    watch: extend( filesToWatch, {
-      options: {
-        nospawn       : true,
-        livereload   : true
-      },
-
-      common_js : {
-        files : [
-          'src/javascripts/common/*'
-        ],
-        tasks : 'js'
-      },
-
-      common_css: {
-        files : [
-          'src/stylesheets/utils/*',
-          'src/stylesheets/utils/**/*'
-        ],
-        tasks : 'css'
-      },
-
-      assets : {
-        files: [
-          'src/images/*',
-          'src/images/**/*',
-          'src/fonts/**/*'
-        ],
-        tasks: [ 'copy' ]
-      }
-    })
   });
 
+  grunt.registerTask('default', []);
 
-  grunt.registerTask('js', [ 'jshint', 'uglify', 'concat' ] );
-  grunt.registerTask('css', [ 'sprite', 'sass' ]);
+  grunt.registerTask('js', [ 'jst', 'jshint', 'concat' ]);
   grunt.registerTask('assets', [ 'copy' ]);
-
-  grunt.registerTask('default', [ 'clean', 'js', 'css', 'assets' ]);
+  grunt.registerTask('css', [ 'sass' ]);
+  grunt.registerTask('default', [ 'clean', 'assets', 'css', 'js', 'uglify', 'jasmine' ]);
   grunt.registerTask('dev', [ 'default', 'watch' ]);
 };

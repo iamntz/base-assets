@@ -1,9 +1,35 @@
 {
   "javascripts" : {
+    "defaults" : {
+      "dest"        : "dist/javascripts/{{task_key}}.js",
+      "watch_tasks" : [ "js" ],
+      "test_options": {
+        "specs"  : "src/spec/**/*.spec.js",
+        "helpers": "src/spec/**/*.helper.js",
+        "vendor" : [
+          "{{{%= name %}.vendor}}",
+          "src/vendor/bower_components/sinonjs/sinon.js",
+          "dist/javascripts/templates.js"
+        ]
+      }
+    },
+
+    "jumy_app" : {
+      "options" : {
+        "testable" : true
+      },
+
+      "src" : [
+        "src/javascripts/{%= name %}/app/App.js"
+      ]
+    },
+
     "{%= name %}" : {
       "src" : [
         "src/javascripts/{%= name %}/*.js",
-        "src/javascripts/{%= name %}/**/*.js"
+        "src/javascripts/{%= name %}/**/*.js",
+        "!src/javascripts/{%= name %}/app/*.js",
+        "!src/javascripts/{%= name %}/app/**/*.js"
       ]
     },
 
@@ -12,14 +38,21 @@
         "skipLint" : true
       },
       "src" : [
-        "src/vendor/*.js",
-        "src/vendor/**/*.js"
+        "src/vendor/md5.js",
+        "src/vendor/bower_components/jquery/dist/jquery.js",
+        "src/vendor/bower_components/underscore/underscore.js",
+        "src/vendor/bower_components/backbone/backbone.js"
       ]
     }
   },
 
 
   "stylesheets" : {
+    "defaults" : {
+      "dest"        : "dist/stylesheets/{{task_key}}.css",
+      "watch_tasks" : [ "sass" ]
+    },
+
     "screen" : {
       "src" : [
         "src/stylesheets/screen/screen.scss",
