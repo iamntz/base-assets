@@ -1,5 +1,5 @@
-module.exports = function( files ){
-  var extend = require( 'extend' );
+module.exports = function( files, extend, isDev ){
+  var settings = require( './file-settings' )( files, extend, isDev  );
 
   var returnOptions = {
     lint  : [],
@@ -9,43 +9,36 @@ module.exports = function( files ){
     tests : []
   };
 
-  var defaults = files.defaults;
-  delete files.defaults;
-  var jsKeys   = Object.keys( files );
 
-  jsKeys.forEach(function( taskName ){
-    var task    = files[taskName];
-    var options = task.options || {};
-    options = extend( options, defaults );
-
-    var dest    = ( task.dest || defaults.dest.replace( "{{task_key}}", taskName ) );
+  settings.groups.forEach(function( taskName ){
+    var task = settings.getTaskOptions( taskName );
     if( !task.src ){ return; }
 
 
     returnOptions.concat[taskName] = {
       src: task.src,
-      dest: dest,
+      dest: task.dest,
     };
 
-    if( !options.skipUglify ){
+    if( !task.options.skipUglify ){
       returnOptions.uglify[taskName] = {
-        src : dest,
-        dest: dest.slice(0, -3) + '.min.js'
+        src : task.dest,
+        dest: task.dest.slice(0, -3) + '.min.js'
       };
     }
 
-    if( !options.skipLint ){
+    if( !task.options.skipLint ){
       returnOptions.lint.push( task.src );
     }
 
     returnOptions.watch[taskName] = {
       files : task.src,
-      tasks : options.watch_tasks
+      tasks : task.options.watch_tasks
     };
 
-    if( options.testable ){
+    if( task.options.testable ){
       var testVendors = [];
-      var configTestVendor = options.test_options.vendor.slice(0);
+      var configTestVendor = task.options.test_options.vendor.slice(0);
 
       configTestVendor.forEach(function( vendor ){
         var vendorKey = vendor.match( /\{\{(.*?)\}\}/g );
@@ -57,11 +50,11 @@ module.exports = function( files ){
         }
       });
 
-      options.test_options.vendor = testVendors;
+      task.options.test_options.vendor = testVendors;
 
       returnOptions.tests[taskName] = {
         src: task.src,
-        options: options.test_options
+        options: task.options.test_options
       };
     }
 

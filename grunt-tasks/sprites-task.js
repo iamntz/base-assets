@@ -1,10 +1,9 @@
-module.exports = function( files ){
-  var extend = require( 'extend' );
+module.exports = function( files, extend, isDev ){
+
   var returnOptions = {
     sprites  : [],
     watch : []
   };
-
 
   function cssVarMap( sprite, options ) {
     sprite.sprite_name = sprite.name;
@@ -60,5 +59,6 @@ module.exports = function( files ){
   Object.keys( returnOptions.sprites ).forEach( function(sprite){
     returnOptions.watch.push( returnOptions.sprites[sprite].src );
   });
+
   return returnOptions;
 };

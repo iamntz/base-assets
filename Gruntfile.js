@@ -11,9 +11,9 @@ module.exports = function(grunt) {
   });
 
   var assets   = grunt.file.readJSON('assets.json');
-  var jsFiles  = require('./grunt-tasks/js-files.js')( assets.javascripts, isDev );
-  var cssFiles = require('./grunt-tasks/css-files.js')( assets.stylesheets, isDev );
-  var sprites  = require( './grunt-tasks/sprites-task.js' )();
+  var jsFiles  = require('./grunt-tasks/js-files.js')( assets.javascripts, extend, isDev );
+  var cssFiles = require('./grunt-tasks/css-files.js')( assets.stylesheets, extend, isDev );
+  var sprites  = require( './grunt-tasks/sprites-task.js' )( assets.stylesheets, extend, isDev );
 
   var package_json  = grunt.file.readJSON('package.json');
 
@@ -77,9 +77,9 @@ module.exports = function(grunt) {
             expand: true,
             cwd: 'src',
             src: [
-              'images/*',
               'images/**/*',
-              'fonts/**/*'
+              'fonts/**/*',
+              '!images/sprites/**/*',
             ],
             dest: 'dist/'
           }

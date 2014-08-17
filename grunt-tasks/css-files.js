@@ -1,6 +1,5 @@
-module.exports = function( files, isDev ){
-  var extend = require( 'extend' );
-  var settings = require( './file-settings' )( files );
+module.exports = function( files, extend, isDev  ){
+  var settings = require( './file-settings' )( files, extend, isDev  );
 
   var returnOptions = {
     watch : [],

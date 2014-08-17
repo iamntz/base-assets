@@ -1,6 +1,4 @@
-module.exports = function( files ){
-  var extend = require( 'extend' );
-
+module.exports = function( files, extend, isDev  ){
   function FileSettings( files ) {
     this.files = files;
     this.defaultOptions = this.files.defaults;

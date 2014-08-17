@@ -13,14 +13,13 @@ module.exports = function(){
 
     common_js : {
       files : [
-        'src/javascripts/common/*'
+        'src/javascripts/common/**/*'
       ],
       tasks : 'js'
     },
 
     common_css: {
       files : [
-        'src/stylesheets/utils/*',
         'src/stylesheets/utils/**/*'
       ],
       tasks : 'css'
@@ -28,7 +27,6 @@ module.exports = function(){
 
     sprites: {
       files : [
-        'src/images/sprites/*',
         'src/images/sprites/**/*'
       ],
       tasks : [ 'sprite' ]
@@ -36,7 +34,6 @@ module.exports = function(){
 
     assets : {
       files: [
-        'src/images/*',
         'src/images/**/*',
         'src/fonts/**/*'
       ],

@@ -14,7 +14,7 @@
       }
     },
 
-    "jumy_app" : {
+    "{%= name %}_app" : {
       "options" : {
         "testable" : true
       },
