@@ -1,7 +1,8 @@
 module.exports = function(config) {
+  var extend  = require("extend");
   var fs      = require("fs");
   var assets  = ( JSON.parse( fs.readFileSync("assets.json", "utf8") ) );
-  var jsFiles = require('./grunt-tasks/js-files.js')( assets.javascripts );
+  var jsFiles = require('./grunt-tasks/js-files.js')( assets.javascripts, extend );
 
 
   var filesToTest = jsFiles.tests;
