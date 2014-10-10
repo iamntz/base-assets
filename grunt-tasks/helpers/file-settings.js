@@ -13,10 +13,10 @@ module.exports = function( files, extend, isDev  ){
       var dest = task.dest || options.dest.replace( "{{task_key}}", taskName );
 
       return {
-        task : task,
+        task   : task,
         options: options,
-        dest: dest,
-        src : task.src
+        dest   : dest,
+        src    : task.src
       };
     }
   };

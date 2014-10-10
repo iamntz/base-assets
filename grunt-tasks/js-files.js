@@ -1,5 +1,5 @@
 module.exports = function( files, extend, isDev ){
-  var settings = require( './file-settings' )( files, extend, isDev  );
+  var settings = require( './helpers/file-settings' )( files, extend, isDev  );
 
   var returnOptions = {
     lint  : [],
