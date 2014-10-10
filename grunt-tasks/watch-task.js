@@ -5,40 +5,10 @@ module.exports = function(){
     options: {
       livereload   : true
     },
-
     templates: {
-      files: [ 'src/javascripts/{%= name %}/app/Templates/**/*.html' ],
+      files: [ 'src/views/**/*.html' ],
       tasks : ['jst']
     },
-
-    common_js : {
-      files : [
-        'src/javascripts/common/**/*'
-      ],
-      tasks : 'js'
-    },
-
-    common_css: {
-      files : [
-        'src/stylesheets/utils/**/*'
-      ],
-      tasks : 'css'
-    },
-
-    sprites: {
-      files : [
-        'src/images/sprites/**/*'
-      ],
-      tasks : [ 'sprite' ]
-    },
-
-    assets : {
-      files: [
-        'src/images/**/*',
-        'src/fonts/**/*'
-      ],
-      tasks: [ 'copy' ]
-    }
   };
 
   groups.forEach(function( group ){

@@ -1,0 +1,53 @@
+  $hello-x: 0px;
+  $hello-y: 0px;
+  $hello-offset-x: 0px;
+  $hello-offset-y: 0px;
+  $hello-width: 100px;
+  $hello-height: 100px;
+  $hello-total-width: 100px;
+  $hello-total-height: 100px;
+  $hello-image: '../images/sample.png';
+  $hello: 0px 0px 0px 0px 100px 100px 100px 100px '../images/sample.png';
+
+@mixin sprite-width($sprite) {
+  width: nth($sprite, 5);
+}
+
+@mixin sprite-height($sprite) {
+  height: nth($sprite, 6);
+}
+
+@mixin sprite-position($sprite) {
+  $sprite-offset-x: nth($sprite, 3);
+  $sprite-offset-y: nth($sprite, 4);
+  background-position: $sprite-offset-x  $sprite-offset-y;
+}
+
+@mixin sprite-image($sprite) {
+  background-image: url($sprite);
+}
+
+@mixin sprite($sprite) {
+  @include sprite-position($sprite);
+  @include sprite-width($sprite);
+  @include sprite-height($sprite);
+}
+
+
+
+.sample {
+  @include sprite-image("../images/sample.png");
+  position:relative;
+  display:inline-block;
+
+  &.icon-before:before {
+    content: " ";
+    display:inline-block;
+  }
+
+  &.,
+  &.icon-before.:before {
+    @include sprite( $hello );
+  }
+}
+

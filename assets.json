@@ -7,41 +7,38 @@
         "specs"  : "src/spec/**/*.spec.js",
         "helpers": "src/spec/**/*.helper.js",
         "vendor" : [
-          "{{{%= name %}.vendor}}",
+          "{{{%= name%}.vendor}}",
           "src/vendor/bower_components/sinonjs/sinon.js",
           "dist/javascripts/templates.js"
         ]
       }
     },
 
-    "{%= name %}_app" : {
+    "{%= name%}_app" : {
       "options" : {
         "testable" : true
       },
 
       "src" : [
-        "src/javascripts/{%= name %}/app/App.js"
+        "src/javascripts/{%= name%}/app/App.js"
       ]
     },
 
-    "{%= name %}" : {
+    "{%= name%}" : {
       "src" : [
-        "src/javascripts/{%= name %}/*.js",
-        "src/javascripts/{%= name %}/**/*.js",
-        "!src/javascripts/{%= name %}/app/*.js",
-        "!src/javascripts/{%= name %}/app/**/*.js"
+        "src/javascripts/{%= name%}/*.js",
+        "src/javascripts/{%= name%}/**/*.js",
+        "!src/javascripts/{%= name%}/app/*.js",
+        "!src/javascripts/{%= name%}/app/**/*.js"
       ]
     },
 
-    "{%= name %}.vendor" : {
+    "{%= name%}.vendor" : {
       "options" : {
         "skipLint" : true
       },
       "src" : [
-        "src/vendor/md5.js",
-        "src/vendor/bower_components/jquery/dist/jquery.js",
-        "src/vendor/bower_components/underscore/underscore.js",
-        "src/vendor/bower_components/backbone/backbone.js"
+        "src/javascripts/common/**/*"
       ]
     }
   },
@@ -50,14 +47,41 @@
   "stylesheets" : {
     "defaults" : {
       "dest"        : "dist/stylesheets/{{task_key}}.css",
-      "watch_tasks" : [ "sass" ]
+      "watch_tasks" : [ "sass" ],
+      "sprites" : {
+        "watch_tasks" : [ "sprite" ]
+      }
     },
 
     "screen" : {
       "src" : [
         "src/stylesheets/screen/screen.scss",
-        "src/stylesheets/screen/**/*.scss"
+        "src/stylesheets/screen/**/*.scss",
+        "src/stylesheets/utils/**/*"
+      ],
+
+      "sprites": [
+        {
+          "sample" : {
+            "hasHover" : false,
+            "baseClass" : "sample"
+          }
+        }
       ]
     }
-  }
+  },
+
+  "copy" : [
+    {
+      "expand": true,
+      "cwd": "src",
+
+      "src": [
+        "images/**/*",
+        "!images/sprites/**/*"
+      ],
+
+      "dest": "dist/"
+    }
+  ]
 }
