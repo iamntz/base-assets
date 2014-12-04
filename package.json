@@ -22,7 +22,7 @@
     "karma-chrome-launcher"    : "*",
     "karma-firefox-launcher"   : "*",
     "karma-ie-launcher"        : "*",
-    "karma-jasmine"            : "*",
+    "karma-jasmine"			   : "~0.2.0",
     "karma-opera-launcher"     : "*",
     "karma-phantomjs-launcher" : "*",
     "karma-safari-launcher"    : "*",

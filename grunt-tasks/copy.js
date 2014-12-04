@@ -10,8 +10,13 @@ module.exports = function( files, extend, isDev  ){
 
 
   files.forEach( function(file_group, i){
+    var files = [];
+    for (var i = 0; i < file_group.src.length; i++) {
+      files.push( file_group.cwd + '/' + file_group.src[i] );
+    }
+
     returnOptions.watch[i] = {
-      files : file_group.src,
+      files : files,
       tasks : 'copy'
     };
   });
